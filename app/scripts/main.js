@@ -7,9 +7,15 @@ var splatScene = {
 		document.body.appendChild( splatScene.renderer.domElement );
 		splatScene.camera.position.z = 5;
 
+		//creating light
 		var light = splatScene.letThereBeLight();
 		splatScene.scene.add(light);
 
+		//putting skybox
+		var skyBoxCube = splatScene.skybox();
+		splatScene.scene.add(skyBoxCube);
+
+		//instantiating objects
 		splatScene.createObjects();
 
 		for(var i = 0; i<splatScene.objects.length; i++){
@@ -29,6 +35,23 @@ var splatScene = {
 	},
 
 	skybox: function(){
+		 var urls = [
+   			"images/one.png", "images/one.png", "images/five.png", "images/one.png", "images/one.png", "images/five.png"
+		 ];
+		 var i =0
+		 var materialArray = new Array();
+		 for(image in urls){
+			materialArray.push(new THREE.MeshBasicMaterial({
+				map: THREE.ImageUtils.loadTexture( urls[i]),
+				side: THREE.BackSide
+				})	
+			)
+			i++;
+		}
+		var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
+		var geometry = new THREE.CubeGeometry( 1000, 1000, 1000);
+		skyboxMesh    = new THREE.Mesh( geometry, skyMaterial );
+		return skyboxMesh;
 	},
 
 	floor: function(){
