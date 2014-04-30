@@ -45,7 +45,7 @@ var splatScene = {
 
 	skybox: function(){
 		 var urls = [
-   			"images/four.png", "images/one.png", "images/five.png", "images/canyon_texture2.JPG", "images/ground.jpeg", "images/five.png"
+   			"images/four.png", "images/one.png", "images/five.png", "images/canyon_texture2.JPG", "images/canyon_ground.jpg", "images/five.png"
    				      												//ground									//negativez
 		 ];
 		 var i =0
@@ -291,13 +291,15 @@ var splatScene = {
 	render: function(){
 		requestAnimationFrame(splatScene.render);
 
+		splatScene.animCritter();
+
 		if(splatScene.animating > 0){
 			splatScene.startAni(splatScene.animating);
 		}
 		//if( splatScene.video.readyState === splatScene.video.HAVE_ENOUGH_DATA ){
   		//	splatScene.videoTexture.needsUpdate = true;
 		//}
-<<<<<<< HEAD
+
 		// if(splatScene.aniState >0){
 
 		// }
@@ -312,21 +314,6 @@ var splatScene = {
 		// 	}
 		// }
 
-=======
-
-		splatScene.animCritter();
-
-		for(var i = 0; i<splatScene.objects.length; i++){
-			var focus = splatScene.objects[i];
-			splatScene.animations.rotate(focus);
-			splatScene.animations.translate(focus);
-			if(splatScene.objects[i].getCamera()){
-				splatScene.objects[i].getMesh().visible = false;
-				splatScene.objects[i].getCamera().updateCubeMap( splatScene.renderer, splatScene.scene );
-				splatScene.objects[i].getMesh().visible = true;
-			}
-		}
->>>>>>> FETCH_HEAD
 		splatScene.renderer.render(splatScene.scene, splatScene.camera);
 	},
 
