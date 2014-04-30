@@ -36,8 +36,8 @@ var splatScene = {
 
 	skybox: function(){
 		 var urls = [
-   			"images/one.png", "images/one.png", "images/five.png", "images/ground.jpeg", "images/ground.jpeg", "images/five.png"
-   				      																					//negativez
+   			"images/four.png", "images/one.png", "images/five.png", "images/canyon_texture2.JPG", "images/ground.jpeg", "images/five.png"
+   				      												//ground									//negativez
 		 ];
 		 var i =0
 		 var materialArray = new Array();
@@ -79,11 +79,12 @@ var splatScene = {
 
 		//creating moutain
 		var mountainMaterial = new THREE.MeshBasicMaterial({
-			color: '#cfcfcf'
+			//color: '#cfcfcf',
+			map: THREE.ImageUtils.loadTexture("images/canyon_texture1.jpg")
 		});
-		var mountain = new THREE.Mesh(new THREE.CubeGeometry(14,1,15), mountainMaterial);
+		var mountain = new THREE.Mesh(new THREE.CubeGeometry(25,1,15), mountainMaterial);
 		mountain.position = new THREE.Vector3(0,-2.5,0);
-		mountain.rotation.xf += 10 * Math.PI / 180
+		mountain.rotation.x += 10 * Math.PI / 180;
 		splatScene.scene.add(mountain);
 
 	},
@@ -179,8 +180,18 @@ var splatScene = {
 		}
 	},
 
+	startAni: function(){
+		splatScene.animating = 1;
+		splatScene.camera .rotation.x += 10 * Math.PI / 180;
+
+	},
+
 	handleEvents : function(keyCode){
 		switch(keyCode){
+			//start animation on space
+			case 32:
+				splatScene.startAni();
+				break;
 			case 65: //tilt up with 'a'
 				splatScene.camera.rotation.x += .01;
 				splatScene.camera.updateProjectionMatrix();
