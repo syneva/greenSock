@@ -36,7 +36,8 @@ var splatScene = {
 
 	skybox: function(){
 		 var urls = [
-   			"images/one.png", "images/one.png", "images/five.png", "images/one.png", "images/one.png", "images/five.png"
+   			"images/one.png", "images/one.png", "images/five.png", "images/ground.jpeg", "images/ground.jpeg", "images/five.png"
+   				      																					//negativez
 		 ];
 		 var i =0
 		 var materialArray = new Array();
@@ -49,7 +50,7 @@ var splatScene = {
 			i++;
 		}
 		var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
-		var geometry = new THREE.CubeGeometry( 1000, 1000, 1000);
+		var geometry = new THREE.CubeGeometry( 1000, 50, 1000);
 		skyboxMesh    = new THREE.Mesh( geometry, skyMaterial );
 		return skyboxMesh;
 	},
@@ -75,6 +76,16 @@ var splatScene = {
 		sphere.overdraw = true;
 		sphere.position = new THREE.Vector3(0,0,0);
 		splatScene.scene.add(sphere);
+
+		//creating moutain
+		var mountainMaterial = new THREE.MeshBasicMaterial({
+			color: '#cfcfcf'
+		});
+		var mountain = new THREE.Mesh(new THREE.CubeGeometry(14,1,15), mountainMaterial);
+		mountain.position = new THREE.Vector3(0,-2.5,0);
+		mountain.rotation.xf += 10 * Math.PI / 180
+		splatScene.scene.add(mountain);
+
 	},
 
 	//wrapper to simplify animations on objects
@@ -170,12 +181,12 @@ var splatScene = {
 
 	handleEvents : function(keyCode){
 		switch(keyCode){
-			case 38: //tilt up with 'up'
+			case 65: //tilt up with 'a'
 				splatScene.camera.rotation.x += .01;
 				splatScene.camera.updateProjectionMatrix();
 				//alert('move forward!');
 				break;
-			case 40: //tilt down with 'down'
+			case 83: //tilt down with 'b'
 				splatScene.camera.rotation.x -= .01;
 				splatScene.camera.updateProjectionMatrix();
 				break;
