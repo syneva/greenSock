@@ -17,6 +17,8 @@ var splatScene = {
 
 		//instantiating objects
 		splatScene.createObjects();
+		splatScene.animating = 0;
+		splatScene.time = 0;
 
 		for(var i = 0; i<splatScene.objects.length; i++){
 			var focus = splatScene.objects[i].getMesh();
@@ -180,17 +182,53 @@ var splatScene = {
 		}
 	},
 
-	startAni: function(){
-		splatScene.animating = 1;
-		splatScene.camera .rotation.x += 10 * Math.PI / 180;
-
+	startAni: function(state){
+		//console.log(state);
+		switch(state){
+			case 0:
+				splatScene.animating = 1;
+				break;
+			case 1:
+				// console.log(splatScene.camera.rotation.x);
+				if(splatScene.camera.rotation.x<.4 )
+					splatScene.camera.rotation.x += 1*Math.PI/180;
+				else
+					splatScene.animating++;
+				break;
+			case 2:
+				//console.log(splatScene.camera.position.z);
+				if(splatScene.camera.position.z>-7.5 )
+					splatScene.camera.translateZ(-.15);
+				else
+					splatScene.animating++;
+				break;
+			case 3:
+				//console.log(splatScene.time);
+				splatScene.time++;
+				var time = splatScene.time/48;
+				var speed = -.15*time+.5*9.8*time*time;
+				speed*=-1;
+				console.log(speed);
+				if(splatScene.camera.rotation.x>-2.6 ){
+					splatScene.camera.rotation.x -= 3*Math.PI/180;
+					//splatScene.camera.translateY(speed);
+				}
+				else
+					splatScene.animating++;
+				break;
+		}
+		//splatScene.animating = 1;
+		//splatScene.camera .rotation.x += 10 * Math.PI / 180;
+	},
+	eventComplete: function(){
+		console.log("eventComplete");
 	},
 
 	handleEvents : function(keyCode){
 		switch(keyCode){
 			//start animation on space
 			case 32:
-				splatScene.startAni();
+				splatScene.startAni(splatScene.animating);
 				break;
 			case 65: //tilt up with 'a'
 				splatScene.camera.rotation.x += .01;
@@ -200,6 +238,7 @@ var splatScene = {
 			case 83: //tilt down with 'b'
 				splatScene.camera.rotation.x -= .01;
 				splatScene.camera.updateProjectionMatrix();
+				console.log(splatScene.camera.rotation.x);
 				break;
 			case 37: //look left with 'left'
 				splatScene.camera.rotation.y += .05;  
@@ -212,6 +251,7 @@ var splatScene = {
 			case 70: //move forward with 'f'
 				splatScene.camera.translateZ(-.1);
 				splatScene.camera.updateProjectionMatrix();
+				console.log(splatScene.scamera.position.z);
 				break;
 			case 66: //move backward with 'b'
 				splatScene.camera.translateZ(.1);
@@ -226,20 +266,25 @@ var splatScene = {
 	render: function(){
 		requestAnimationFrame(splatScene.render);
 
+		if(splatScene.animating > 0){
+			splatScene.startAni(splatScene.animating);
+		}
 		//if( splatScene.video.readyState === splatScene.video.HAVE_ENOUGH_DATA ){
   		//	splatScene.videoTexture.needsUpdate = true;
 		//}
+		// if(splatScene.aniState >0){
 
-		for(var i = 0; i<splatScene.objects.length; i++){
-			var focus = splatScene.objects[i];
-			splatScene.animations.rotate(focus);
-			splatScene.animations.translate(focus);
-			if(splatScene.objects[i].getCamera()){
-				splatScene.objects[i].getMesh().visible = false;
-				splatScene.objects[i].getCamera().updateCubeMap( splatScene.renderer, splatScene.scene );
-				splatScene.objects[i].getMesh().visible = true;
-			}
-		}
+		// }
+		// for(var i = 0; i<splatScene.objects.length; i++){
+		// 	var focus = splatScene.objects[i];
+		// 	splatScene.animations.rotate(focus);
+		// 	splatScene.animations.translate(focus);
+		// 	if(splatScene.objects[i].getCamera()){
+		// 		splatScene.objects[i].getMesh().visible = false;
+		// 		splatScene.objects[i].getCamera().updateCubeMap( splatScene.renderer, splatScene.scene );
+		// 		splatScene.objects[i].getMesh().visible = true;
+		// 	}
+		// }
 
 		splatScene.renderer.render(splatScene.scene, splatScene.camera);
 	}
