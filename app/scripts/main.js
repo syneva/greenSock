@@ -1,4 +1,7 @@
-var critter_anim;
+var critterMaterials = [];
+var critter_currMat;
+var critter_matMax;
+var clock;
 
 var splatScene = {
 	init : function(){
@@ -8,6 +11,8 @@ var splatScene = {
 		splatScene.renderer.setSize( window.innerWidth, window.innerHeight );
 		document.body.appendChild( splatScene.renderer.domElement );
 		splatScene.camera.position.z = 5;
+
+		clock = 0;
 
 		//creating light
 		var light = splatScene.letThereBeLight();
@@ -82,13 +87,19 @@ var splatScene = {
 		// splatScene.scene.add(sphere);
 
 		//creating critter 
-		var critterTexture = new THREE.ImageUtils.loadTexture("images/red_critter.png"); //red_sprite_critter.png
-		//critter_anim = new TextureAnimator( critterTexture, 26, 1, 26, 75 ); // texture, #horiz, #vert, #total, duration.
+		for(i=0;i<7;i++){
+			critterMaterials[i-1] = "images/critter/critter"+i+".png";
+		}
+		critter_matMax = 5;
+		critter_currMat = 0;
+
+		var critterTexture = new THREE.ImageUtils.loadTexture(critterMaterials[critter_currMat]); //red_sprite_critter.png
 		var critterMaterial = new THREE.MeshBasicMaterial( { map: critterTexture, side:THREE.DoubleSide, transparent: true } );
 		var critterGeometry = new THREE.PlaneGeometry(1, 1, 1, 1);
 		var critter = new THREE.Mesh(critterGeometry, critterMaterial);
-		critter.position.set(0,0,0); //= new THREE.Vector3(0,0,0);
-		splatScene.scene.add(critter);
+		splatScene.critter = critter;
+		splatScene.critter.position.set(0,0,0); //= new THREE.Vector3(0,0,0);
+		splatScene.scene.add(splatScene.critter);
 
 
 		//creating moutain
@@ -303,6 +314,8 @@ var splatScene = {
 
 =======
 
+		splatScene.animCritter();
+
 		for(var i = 0; i<splatScene.objects.length; i++){
 			var focus = splatScene.objects[i];
 			splatScene.animations.rotate(focus);
@@ -315,48 +328,27 @@ var splatScene = {
 		}
 >>>>>>> FETCH_HEAD
 		splatScene.renderer.render(splatScene.scene, splatScene.camera);
+	},
+
+	animCritter: function(){
+		clock++;
+
+		if(clock > 50){
+			clock=0;
+
+			critter_currMat++;
+
+			(splatScene.critter).material.map = THREE.ImageUtils.loadTexture(critterMaterials[critter_currMat]);
+			//(splatScene.critter).material.needsUpdate = true;
+
+			if(critter_currMat >= critter_matMax){
+				critter_currMat = -1;
+			}
+		}
 	}
 	
 };
 
-function TextureAnimator(texture, tilesHoriz, tilesVert, numTiles, tileDispDuration) 
-{	
-	// note: texture passed by reference, will be updated by the update function.
-		
-	this.tilesHorizontal = tilesHoriz;
-	this.tilesVertical = tilesVert;
-	// how many images does this spritesheet contain?
-	//  usually equals tilesHoriz * tilesVert, but not necessarily,
-	//  if there at blank tiles at the bottom of the spritesheet. 
-	this.numberOfTiles = numTiles;
-	texture.wrapS = texture.wrapT = THREE.RepeatWrapping; 
-	texture.repeat.set( 1 / this.tilesHorizontal, 1 / this.tilesVertical );
-
-	// how long should each image be displayed?
-	this.tileDisplayDuration = tileDispDuration;
-
-	// how long has the current image been displayed?
-	this.currentDisplayTime = 0;
-
-	// which image is currently being displayed?
-	this.currentTile = 0;
-		
-	this.update = function( milliSec )
-	{
-		this.currentDisplayTime += milliSec;
-		while (this.currentDisplayTime > this.tileDisplayDuration)
-		{
-			this.currentDisplayTime -= this.tileDisplayDuration;
-			this.currentTile++;
-			if (this.currentTile == this.numberOfTiles)
-				this.currentTile = 0;
-			var currentColumn = this.currentTile % this.tilesHorizontal;
-			texture.offset.x = currentColumn / this.tilesHorizontal;
-			var currentRow = Math.floor( this.currentTile / this.tilesHorizontal );
-			texture.offset.y = currentRow / this.tilesVertical;
-		}
-	};
-};
 
 splatScene.init();
 
