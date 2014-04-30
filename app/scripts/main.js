@@ -1,3 +1,5 @@
+var critter_anim;
+
 var splatScene = {
 	init : function(){
 		splatScene.scene = new THREE.Scene();
@@ -36,7 +38,8 @@ var splatScene = {
 
 	skybox: function(){
 		 var urls = [
-   			"images/one.png", "images/one.png", "images/five.png", "images/one.png", "images/one.png", "images/five.png"
+   			"images/four.png", "images/one.png", "images/five.png", "images/canyon_texture2.JPG", "images/ground.jpeg", "images/five.png"
+   				      												//ground									//negativez
 		 ];
 		 var i =0
 		 var materialArray = new Array();
@@ -61,20 +64,42 @@ var splatScene = {
 
 		splatScene.objects = [];
 
-		var sphereMaterial = new THREE.MeshPhongMaterial({
-	      			// light
-	        		specular: '#FFCEB3',
-	        		// intermediate
-	        		color: '#EECEB3',
-	       			// dark
-	        		emissive: '#FFCEB3',
-	        		shininess: 50
-	      		});
+		// var sphereMaterial = new THREE.MeshPhongMaterial({
+	 //      			// light
+	 //        		specular: '#FFCEB3',
+	 //        		// intermediate
+	 //        		color: '#EECEB3',
+	 //       			// dark
+	 //        		emissive: '#FFCEB3',
+	 //        		shininess: 50
+	 //      		});
 
-		var sphere = new THREE.Mesh(new THREE.SphereGeometry(.5,0,0), sphereMaterial);
-		sphere.overdraw = true;
-		sphere.position = new THREE.Vector3(0,0,0);
-		splatScene.scene.add(sphere);
+		// var sphere = new THREE.Mesh(new THREE.SphereGeometry(.5,0,0), sphereMaterial);
+		// sphere.overdraw = true;
+		// sphere.position = new THREE.Vector3(0,0,0);
+		// splatScene.scene.add(sphere);
+
+		//creating critter 
+		var critterTexture = new THREE.ImageUtils.loadTexture("images/red_critter.png"); //red_sprite_critter.png
+		//critter_anim = new TextureAnimator( critterTexture, 26, 1, 26, 75 ); // texture, #horiz, #vert, #total, duration.
+		var critterMaterial = new THREE.MeshBasicMaterial( { map: critterTexture, side:THREE.DoubleSide, transparent: true } );
+		var critterGeometry = new THREE.PlaneGeometry(1, 1, 1, 1);
+		var critter = new THREE.Mesh(critterGeometry, critterMaterial);
+		critter.position.set(0,0,0); //= new THREE.Vector3(0,0,0);
+		splatScene.scene.add(critter);
+
+
+		//creating moutain
+		var mountainMaterial = new THREE.MeshBasicMaterial({
+			//color: '#cfcfcf',
+			map: THREE.ImageUtils.loadTexture("images/canyon_texture1.jpg")
+		});
+		var mountain = new THREE.Mesh(new THREE.CubeGeometry(25,1,15), mountainMaterial);
+		mountain.position = new THREE.Vector3(0,-2.5,0);
+		mountain.rotation.x += 10 * Math.PI / 180;
+		splatScene.scene.add(mountain);
+
+
 	},
 
 	//wrapper to simplify animations on objects
@@ -168,9 +193,20 @@ var splatScene = {
 		}
 	},
 
+	startAni: function(){
+		splatScene.animating = 1;
+		splatScene.camera .rotation.x += 10 * Math.PI / 180;
+
+	},
+
 	handleEvents : function(keyCode){
 		switch(keyCode){
 			case 38: //tilt up with 'up'
+			//start animation on space
+			case 32:
+				splatScene.startAni();
+				break;
+			case 65: //tilt up with 'a'
 				splatScene.camera.rotation.x += .01;
 				splatScene.camera.updateProjectionMatrix();
 				//alert('move forward!');
@@ -218,10 +254,48 @@ var splatScene = {
 				splatScene.objects[i].getMesh().visible = true;
 			}
 		}
-
 		splatScene.renderer.render(splatScene.scene, splatScene.camera);
 	}
 	
+};
+
+function TextureAnimator(texture, tilesHoriz, tilesVert, numTiles, tileDispDuration) 
+{	
+	// note: texture passed by reference, will be updated by the update function.
+		
+	this.tilesHorizontal = tilesHoriz;
+	this.tilesVertical = tilesVert;
+	// how many images does this spritesheet contain?
+	//  usually equals tilesHoriz * tilesVert, but not necessarily,
+	//  if there at blank tiles at the bottom of the spritesheet. 
+	this.numberOfTiles = numTiles;
+	texture.wrapS = texture.wrapT = THREE.RepeatWrapping; 
+	texture.repeat.set( 1 / this.tilesHorizontal, 1 / this.tilesVertical );
+
+	// how long should each image be displayed?
+	this.tileDisplayDuration = tileDispDuration;
+
+	// how long has the current image been displayed?
+	this.currentDisplayTime = 0;
+
+	// which image is currently being displayed?
+	this.currentTile = 0;
+		
+	this.update = function( milliSec )
+	{
+		this.currentDisplayTime += milliSec;
+		while (this.currentDisplayTime > this.tileDisplayDuration)
+		{
+			this.currentDisplayTime -= this.tileDisplayDuration;
+			this.currentTile++;
+			if (this.currentTile == this.numberOfTiles)
+				this.currentTile = 0;
+			var currentColumn = this.currentTile % this.tilesHorizontal;
+			texture.offset.x = currentColumn / this.tilesHorizontal;
+			var currentRow = Math.floor( this.currentTile / this.tilesHorizontal );
+			texture.offset.y = currentRow / this.tilesVertical;
+		}
+	};
 };
 
 splatScene.init();
