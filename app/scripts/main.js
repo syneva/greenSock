@@ -66,9 +66,9 @@ var splatScene = {
 	},
 
 	floor: function(){
-			var geometry = new THREE.PlaneGeometry( 1000, 1000, 1, 1 );
+			var geometry = new THREE.PlaneGeometry( 200, 100, 1, 1 );
 		var material = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-		var floorTexture = new THREE.ImageUtils.loadTexture( 'images/canyon_texture2.JPG' );
+		var floorTexture = new THREE.ImageUtils.loadTexture( 'images/canyon_ground.jpg' );
 		//floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
 		
 	// DoubleSide: render texture on both sides of mesh
@@ -76,6 +76,7 @@ var splatScene = {
 		var floor = new THREE.Mesh( geometry, floorMaterial );
 		floor.material.side = THREE.DoubleSide;
 		floor.rotation.x = (90);
+		floor.position.z = -30;
 		floor.position.y = -100 ;
 		return floor;
 	},
@@ -268,23 +269,23 @@ var splatScene = {
 					splatScene.animating++;
 					//splatScene.time = 0;
 				}
-			// 	break;
-			// case 4:
-			// 	splatScene.time+=1;
-			// 	var time = splatScene.time/24;
-			// 	var speed = -.15*time+.5*7*time*time;
-			// 	speed *= -1;
-			// 	//console.log(splatScene.camera.position.z)
-			// 	//console.log(speed);
-			// 	if(splatScene.camera.position.z>-25){
-			// 		splatScene.camera.translateZ(speed/100);
-			// 		splatScene.camera.updateProjectionMatrix();
-			// 	}
-			// 	else{
-			// 		//splatScene.camera.translateZ(-10.157-splatScene.camera.position.z);
-			// 		splatScene.animating++;
-			// 	}
-			// 	break;
+				break;
+			case 4:
+				splatScene.time+=1;
+				var time = splatScene.time/24;
+				var speed = -.15*time+.5*7*time*time;
+				speed *= -1;
+				//console.log(splatScene.camera.position.z)
+				//console.log(speed);
+				if(splatScene.camera.position.z>-25){
+					splatScene.camera.translateZ(speed/100);
+					splatScene.camera.updateProjectionMatrix();
+				}
+				else{
+					//splatScene.camera.translateZ(-10.157-splatScene.camera.position.z);
+					splatScene.animating++;
+				}
+				break;
 		}
 		//splatScene.animating = 1;
 		//splatScene.camera .rotation.x += 10 * Math.PI / 180;
@@ -376,7 +377,6 @@ var splatScene = {
 				critter_currMat = -1;
 			}
 		}
->>>>>>> FETCH_HEAD
 	}
 	
 };
