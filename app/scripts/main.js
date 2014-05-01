@@ -33,7 +33,7 @@ var splatScene = {
 		}
 		
 		var floor = splatScene.floor();
-		splatScene.scene.add(floor);
+		//splatScene.scene.add(floor);
 		splatScene.render();
 	},
 
@@ -46,7 +46,7 @@ var splatScene = {
 
 	skybox: function(){
 		 var urls = [
-   			"images/four.png", "images/one.png", "images/five.png", "images/canyon_texture2.JPG", "images/canyon_ground.jpg", "images/five.png"
+   			"images/four.png", "images/one.png", "images/five.png", "images/canyon_ground.jpg", "images/canyon_ground.jpg", "images/five.png"
    				      												//ground									//negativez
 		 ];
 		 var i =0
@@ -60,7 +60,7 @@ var splatScene = {
 			i++;
 		}
 		var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
-		var geometry = new THREE.CubeGeometry( 1000, 1000, 1000);
+		var geometry = new THREE.CubeGeometry( 1000, 1800, 750);
 		skyboxMesh    = new THREE.Mesh( geometry, skyMaterial );
 		return skyboxMesh;
 	},
@@ -77,7 +77,7 @@ var splatScene = {
 		floor.material.side = THREE.DoubleSide;
 		floor.rotation.x = (90);
 		//floor.position.z = -500;
-		floor.position.y = -150 ;
+		floor.position.y = -1100 ;
 		return floor;
 	},
 
@@ -115,16 +115,38 @@ var splatScene = {
 		splatScene.critter.position.set(0,0,0); //= new THREE.Vector3(0,0,0);
 		splatScene.scene.add(splatScene.critter);
 
+		var pofMaterial = new THREE.MeshBasicMaterial({
+			color: "#000000"
+		});
+
+		//point of reference for animating
+		var pof = new THREE.Mesh(new THREE.CubeGeometry(2,2,2), pofMaterial);
+		pof.position = new THREE.Vector3(0,-813, -51);
+		splatScene.scene.add(pof);
 
 		//creating moutain
 		var mountainMaterial = new THREE.MeshBasicMaterial({
 			//color: '#cfcfcf',
 			map: THREE.ImageUtils.loadTexture("images/canyon_texture1.jpg")
 		});
+		var mountainMaterial2 = new THREE.MeshBasicMaterial({
+			//color: '#cfcfcf',
+			map: THREE.ImageUtils.loadTexture("images/canyon_texture2.jpg")
+		});
 		var mountain = new THREE.Mesh(new THREE.CubeGeometry(25,95,15), mountainMaterial);
+		var mountain2 = new THREE.Mesh(new THREE.CubeGeometry(200,800,15), mountainMaterial);
+		mountain2.position = new THREE.Vector3(0,-500, -25);
+
+		var mountain3 = new THREE.Mesh(new THREE.CubeGeometry(800,1200,500), mountainMaterial2);
+		mountain3.position = new THREE.Vector3(0,-550, -705);
+		mountain3.rotation.x = 1;
+
+
 		mountain.position = new THREE.Vector3(0,-48.39 ,0);
-		//mountain.rotation.x += 10 * Math.PI / 180;
+		//mountain.rotation.x += 10 * Math.PI / 180;ff
 		splatScene.scene.add(mountain);
+		splatScene.scene.add(mountain2);
+		splatScene.scene.add(mountain3);
 
 
 	},
@@ -239,13 +261,14 @@ var splatScene = {
 				var speed = -.15*time+.5*.1*time*time;
 				speed *=-1;
 
-				if(splatScene.camera.position.z>-5.1 ){
+				if(splatScene.camera.position.z>3 ){
 					if(splatScene.camera.position.z>3){
 						splatScene.time+=1;
 						
 					}
 					else{
 						splatScene.time-=1;
+
 					}
 					splatScene.camera.translateZ(speed);
 				}
@@ -256,9 +279,17 @@ var splatScene = {
 				}
 				break;
 			case 3:
+				//console.log(splatScene.camera.position.y);
+				if(splatScene.camera.position.y< 15){
+					splatScene.camera.position.y+= 1;
+				}
+				else{
+					splatScene.animating++;
+				}
+				//break;
+			case 4:
 				//console.log(splatScene.time);
-				splatScene.time+=2.1;
-				
+				splatScene.time+=2.1				
 				var time = splatScene.time/24;
 				var speed = -.15*time+.5*.1*time*time;
 				speed*=-1;
@@ -272,21 +303,21 @@ var splatScene = {
 						var rotationTime = splatScene.rotationTime/48.;
 						var rotationSpeed = -.15*rotationTime+.5*60*rotationTime*rotationTime;
 						rotationSpeed*=-1;
-						splatScene.camera.rotation.x += rotationSpeed*Math.PI/180;
+						splatScene.camera.rotation.x += rotationSpeed/2*Math.PI/180;
 
-						splatScene.camera.translateZ(speed);
+						//splatScene.camera.position.y+=speed*2;
+						splatScene.camera.translateZ(speed*2);
 				 		splatScene.camera.updateProjectionMatrix();
 					}
 					else{
 						
-					
+						splatScene.camera.position.y-= 1;
 						splatScene.rotationTime-=1;
 						var slowTime = splatScene.rotationTime/48.;
 						var slowSpeed = -.15*slowTime+.5*60*slowTime*slowTime;
 						slowSpeed*=-1;
-						splatScene.camera.rotation.x += slowSpeed*Math.PI/180;
-
-						splatScene.camera.translateZ(speed);
+						splatScene.camera.rotation.x += slowSpeed/2*Math.PI/180;
+						splatScene.camera.translateZ(speed*2);
 				 		splatScene.camera.updateProjectionMatrix();
 						
 					}
@@ -294,22 +325,24 @@ var splatScene = {
 				}
 				else{
 					splatScene.animating++;
-					//splatScene.time=150
+					splatScene.time=300
 				}
 			
 				break;
-			case 4:
+			case 5:
 				splatScene.time+=1;
-				console.log(splatScene.time);
+				//console.log(splatScene.time);
 				var time = splatScene.time/24;
-				var speed = -.15*time+.5*.13*time*time;
+				var speed = -.15*time+.5*.15*time*time;
 				speed*=-1;
-				if(splatScene.camera.position.y>-90 ){
+				if(splatScene.camera.position.y>-800 ){
 					splatScene.camera.translateZ(speed);
 					splatScene.camera.updateProjectionMatrix();
 				}
 				else{
+					console.log(splatScene.camera.position);
 					splatScene.animating++;
+					splatScene.time = 175;
 				}
 				break;
 		}
@@ -345,12 +378,12 @@ var splatScene = {
 				splatScene.camera.updateProjectionMatrix();
 				break;
 			case 70: //move forward with 'f'
-				splatScene.camera.translateZ(-.1);
+				splatScene.camera.translateZ(-100);
 				splatScene.camera.updateProjectionMatrix();
 				console.log(splatScene.camera.position.z);
 				break;
 			case 66: //move backward with 'b'
-				splatScene.camera.translateZ(1 );
+				splatScene.camera.translateZ(100);
 				splatScene.camera.updateProjectionMatrix();
 				break;
 			default:
