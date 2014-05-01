@@ -10,7 +10,7 @@ var splatScene = {
 		splatScene.renderer =  new THREE.WebGLRenderer();
 		splatScene.renderer.setSize( window.innerWidth, window.innerHeight );
 		document.body.appendChild( splatScene.renderer.domElement );
-		splatScene.camera.position.z = 5;
+		splatScene.camera.position.z = 4;
 
 		clock = 0;
 
@@ -66,7 +66,7 @@ var splatScene = {
 	},
 
 	floor: function(){
-			var geometry = new THREE.PlaneGeometry( 200, 100, 1, 1 );
+			var geometry = new THREE.PlaneGeometry( 1000, 1000, 1, 1 );
 		var material = new THREE.MeshBasicMaterial( { color: 0x000000 } );
 		var floorTexture = new THREE.ImageUtils.loadTexture( 'images/canyon_ground.jpg' );
 		//floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
@@ -76,8 +76,8 @@ var splatScene = {
 		var floor = new THREE.Mesh( geometry, floorMaterial );
 		floor.material.side = THREE.DoubleSide;
 		floor.rotation.x = (90);
-		floor.position.z = -30;
-		floor.position.y = -100 ;
+		//floor.position.z = -500;
+		floor.position.y = -150 ;
 		return floor;
 	},
 
@@ -123,7 +123,7 @@ var splatScene = {
 		});
 		var mountain = new THREE.Mesh(new THREE.CubeGeometry(25,95,15), mountainMaterial);
 		mountain.position = new THREE.Vector3(0,-48.39 ,0);
-		mountain.rotation.x += 10 * Math.PI / 180;
+		//mountain.rotation.x += 10 * Math.PI / 180;
 		splatScene.scene.add(mountain);
 
 
@@ -224,71 +224,95 @@ var splatScene = {
 		//console.log(state);
 		switch(state){
 			case 0:
-				splatScene.animating = 1;
+				splatScene.animating = 2;
 				break;
 			case 1:
 				// console.log(splatScene.camera.rotation.x);
-				if(splatScene.camera.rotation.x<.4 )
-					splatScene.camera.rotation.x += 1*Math.PI/180;
-				else
-					splatScene.animating++;
-				break;
+				// if(splatScene.camera.rotation.x<.4 )
+				// 	splatScene.camera.rotation.x += 1*Math.PI/180;
+				// else
+				// 	splatScene.animating++;
+				// break;
 			case 2:
-				splatScene.time+=1;
+				
 				var time = splatScene.time/24;
-				var speed = -.15*time+.5*1*time*time;
+				var speed = -.15*time+.5*.1*time*time;
 				speed *=-1;
-				if(splatScene.camera.position.y<2.16 ){
+
+				if(splatScene.camera.position.z>-5.1 ){
+					if(splatScene.camera.position.z>3){
+						splatScene.time+=1;
+						
+					}
+					else{
+						splatScene.time-=1;
+					}
 					splatScene.camera.translateZ(speed);
-					console.log(splatScene.camera.position.y);
 				}
 				else{
-					//splatScene.camera.translateZ(-9.3 -splatScene.camera.position.z);
-					//splatScene.camera.position.y =2.16;
 					splatScene.animating++;
+					splatScene.rotationTime=0;
+
 				}
 				break;
 			case 3:
 				//console.log(splatScene.time);
-				splatScene.time+=1;
+				splatScene.time+=2.1;
+				
 				var time = splatScene.time/24;
-				var speed = -.15*time+.5*1*time*time;
+				var speed = -.15*time+.5*.1*time*time;
 				speed*=-1;
 
-				//console.log(speed);
-				if(splatScene.camera.rotation.x>-1.3 ){
-					splatScene.camera.rotation.x += speed/4*Math.PI/180;
-					//bbbsplatScene.camera.translateY(-.05);
-					splatScene.camera.translateZ(speed/100);
-				 	splatScene.camera.updateProjectionMatrix();
+				//console.log("rotation:" + splatScene.camera.rotation.x);
+				//console.log(splatScene.camera.rotation.x);
+
+				if(splatScene.camera.rotation.x>-Math.PI/2 ){
+					if(splatScene.camera.rotation.x>-Math.PI/4){
+						splatScene.rotationTime+=1;
+						var rotationTime = splatScene.rotationTime/48.;
+						var rotationSpeed = -.15*rotationTime+.5*60*rotationTime*rotationTime;
+						rotationSpeed*=-1;
+						splatScene.camera.rotation.x += rotationSpeed*Math.PI/180;
+
+						splatScene.camera.translateZ(speed);
+				 		splatScene.camera.updateProjectionMatrix();
+					}
+					else{
+						
+					
+						splatScene.rotationTime-=1;
+						var slowTime = splatScene.rotationTime/48.;
+						var slowSpeed = -.15*slowTime+.5*60*slowTime*slowTime;
+						slowSpeed*=-1;
+						splatScene.camera.rotation.x += slowSpeed*Math.PI/180;
+
+						splatScene.camera.translateZ(speed);
+				 		splatScene.camera.updateProjectionMatrix();
+						
+					}
+					
 				}
 				else{
-					//console.log(splatScene.camera.rotation.x);
-					//splatScene.camera.rotation.x = -1.3;
-					//splatScene.camera.rotation.x += speed/4*Math.PI/180;
 					splatScene.animating++;
-					//splatScene.time = 0;
+					//splatScene.time=150
 				}
+			
 				break;
 			case 4:
 				splatScene.time+=1;
+				console.log(splatScene.time);
 				var time = splatScene.time/24;
-				var speed = -.15*time+.5*7*time*time;
-				speed *= -1;
-				//console.log(splatScene.camera.position.z)
-				//console.log(speed);
-				if(splatScene.camera.position.z>-25){
-					splatScene.camera.translateZ(speed/100);
+				var speed = -.15*time+.5*.13*time*time;
+				speed*=-1;
+				if(splatScene.camera.position.y>-90 ){
+					splatScene.camera.translateZ(speed);
 					splatScene.camera.updateProjectionMatrix();
 				}
 				else{
-					//splatScene.camera.translateZ(-10.157-splatScene.camera.position.z);
 					splatScene.animating++;
 				}
 				break;
 		}
-		//splatScene.animating = 1;
-		//splatScene.camera .rotation.x += 10 * Math.PI / 180;
 	},
 	eventComplete: function(){
 		console.log("eventComplete");
@@ -297,6 +321,7 @@ var splatScene = {
 	handleEvents : function(keyCode){
 		switch(keyCode){
 			case 38: //tilt up with 'up'
+				splatScene.animating = 0;
 			//start animation on space
 			case 32:
 				splatScene.startAni(splatScene.animating);
